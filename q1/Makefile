@@ -9,7 +9,7 @@ dev0: dev0.cpp
 infrec: infrec.cpp
 	$(CC) $(CFLAGS) -o infrec infrec.cpp
 
-function3: unusable.cpp
+unusable: unusable.cpp
 	$(CC) $(CFLAGS) -o unusable unusable.cpp
 
 clean:
