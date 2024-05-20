@@ -12,7 +12,7 @@ int main(int argc, const char * argv[]) {
 	char* grep[] = {"grep", (char*)name.c_str(), (char*)filename.c_str(), "-m", "1", nullptr};
 	char* sed[] = {"sed", "s/^.* ,//", nullptr};
 
-	int p[4]; // Pipe between grep, sed, and awk
+	int p[4]; 
 
     // Create pipe
     if (pipe(p) < 0) {
@@ -25,8 +25,8 @@ int main(int argc, const char * argv[]) {
     // Create child process for grep
     grep_pid = fork();
     if (grep_pid == 0) {
-        dup2(p[1], STDOUT_FILENO); // Redirect stdout to pipe
-        close(p[0]); // Close read end of pipe
+        dup2(p[1], STDOUT_FILENO); 
+        close(p[0]); 
         execvp("grep", grep);
         exit(1);
     } else if (grep_pid == -1) exit(1);
@@ -34,9 +34,9 @@ int main(int argc, const char * argv[]) {
     // Create child process for sed
     sed_pid = fork();
     if (sed_pid == 0) {
-        dup2(p[0], STDIN_FILENO); // Redirect stdin from pipe
-        close(p[1]); // Close write end of pipe
-        execvp("sed", sed); // Extract phone number after comma
+        dup2(p[0], STDIN_FILENO); 
+        close(p[1]); 
+        execvp("sed", sed); 
         exit(1);
     } else if (sed_pid == -1) exit(1);
 
