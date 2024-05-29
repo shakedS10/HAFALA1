@@ -9,34 +9,34 @@ int main(int argc, const char * argv[]) {
 	for (int i = 1; i < argc; i++) name += (string)argv[i] + " ";
 	name = name.substr(0, name.length() - 1);
 
-	char* grep[] = {"grep", (char*)name.c_str(), (char*)filename.c_str(), "-m", "1", nullptr};
-	char* sed[] = {"sed", "s/^.* ,//", nullptr};
+	char* grep[] = {"grep", (char*)name.c_str(), (char*)filename.c_str(), "-m", "1", nullptr}; //find in file limit to 1 line
+	char* sed[] = {"sed", "s/^.* ,//", nullptr}; //swap values in this case remove everything before the ','
 
-	int p[4]; 
+	int p[3];  //
 
-    // Create pipe
+    // Create pipe for fork
     if (pipe(p) < 0) {
         perror("Pipe creation failed");
         exit(1);
     }
 
-    pid_t grep_pid, sed_pid;
+    pid_t grep_pid, sed_pid; //parameters for forks
 
     // Create child process for grep
-    grep_pid = fork();
+    grep_pid = fork(); //if this is a fork then it must be 0 
     if (grep_pid == 0) {
-        dup2(p[1], STDOUT_FILENO); 
+        dup2(p[1], STDOUT_FILENO); //all output put in p[1]
         close(p[0]); 
-        execvp("grep", grep);
+        execvp("grep", grep); //run command
         exit(1);
     } else if (grep_pid == -1) exit(1);
 
     // Create child process for sed
     sed_pid = fork();
     if (sed_pid == 0) {
-        dup2(p[0], STDIN_FILENO); 
+        dup2(p[0], STDIN_FILENO); //all input put in p[0]
         close(p[1]); 
-        execvp("sed", sed); 
+        execvp("sed", sed); //run command
         exit(1);
     } else if (sed_pid == -1) exit(1);
 
@@ -46,7 +46,7 @@ int main(int argc, const char * argv[]) {
     close(p[1]);
     close(p[2]);
 
-    // Wait for child processes to finish
+    // Wait for child processes to finish must be in this order as above
     waitpid(grep_pid, nullptr, 0);
     waitpid(sed_pid, nullptr, 0);
 
