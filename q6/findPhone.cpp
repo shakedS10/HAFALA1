@@ -12,7 +12,7 @@ int main(int argc, const char * argv[]) {
 	char* grep[] = {"grep", (char*)name.c_str(), (char*)filename.c_str(), "-m", "1", nullptr}; //find in file limit to 1 line
 	char* sed[] = {"sed", "s/^.* ,//", nullptr}; //swap values in this case remove everything before the ','
 
-	int p[3];  //
+	int p[2];  //
 
     // Create pipe for fork
     if (pipe(p) < 0) {
@@ -44,7 +44,6 @@ int main(int argc, const char * argv[]) {
     // Close both ends of pipe in parent process
     close(p[0]);
     close(p[1]);
-    close(p[2]);
 
     // Wait for child processes to finish must be in this order as above
     waitpid(grep_pid, nullptr, 0);
